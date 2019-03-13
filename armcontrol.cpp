@@ -1,7 +1,9 @@
 #include "armcontrol.h"
 
 int run = 1;
-
+/*
+ ham inRange dung de khong che vong quay cua servo, tranh tinh trang crash
+*/
 int inRange(int value, int min = 500, int max = 2400);
 
 int inRange(int value, int min, int max)
@@ -25,6 +27,10 @@ ArmControl::ArmControl()
 	if (gpioInitialise() < 0) return;
 	gpioSetSignalFunc(SIGINT, stop);
 }
+/*
+idle la ham dua cac servo cua canh tay ve vi tri goc ban dau khi khoi tao
+thuong de goc ban dau la luc canh tay o vi tri vuong goc luc dau
+*/
 
 void ArmControl::idle()
 {
@@ -40,6 +46,18 @@ void ArmControl::idle()
 	gpioServo(Config::SERVO4, 1500);
 	time_sleep(0.5);
 }
+/*
+pickUp la ham hai qua (sai so, chieu cao cua qua, khoang cach tu robot den qua)
+Sai so duoc tinh tu ket qua xu ly anh, no la sai so giua tam cua qua va tam cua robot
+Sai so error duoc dung de dieu khien servo 4 la sevo quay canh tay sang trai, sang phai
+----
+Sau khi ket qua xu ly anh chung ta se cho robot dung lai o cac distance khac nhau phu thuoc vao robot
+Do chieu cao cua qua tuong ung can gap -> ta co do sau va do cao, lan luon thay doi gia tri cua xung sevo
+den khi tay cham vao qua mot cach thuan loi ta duoc tuong quan do cao theo xung.
+Lan luot tay doi do cao theo xung -> chon ra 3 diem thuc nghiem
+Fit ham theo cac diem thuc nghiem de tim ra quy luat lay bong
+Cho nay khi servo2 quay thi servo1 rat de roi vao goc chet (crash) nen dua servo1 ve goc tuong ung voi xung 1100 - thuc nghiem 
+*/
 
 void ArmControl::pickUp(float error, float height, float distance)
 {	
@@ -64,7 +82,9 @@ void ArmControl::pickUp(float error, float height, float distance)
     gpioServo(Config::SERVO3, 900);
     time_sleep(0.2);
 }
-
+/*
+drop la ham tha qua ra khoi tay gap, luc do dua canh tay ve thang giong nhu goc ban dau, roi mo tay ra cho qua roi xuong
+*/
 void ArmControl::drop()
 {
 	setServo(Config::SERVO1, 1000, 20);
@@ -81,6 +101,11 @@ void ArmControl::drop()
 	time_sleep(0.5);
 }
 
+/*
+setServo la ham dieu khien servo theo xung can dat duoc theo cac buoc thay doi
+Vi du muon servo nhan 1 xung la 1200, neu dua ngay vao xung do thi servo se chuyen ngay lap tuc den goc tuong ung -> bi giat
+dua step vao no se len goc mot cach tu tu
+*/
 void ArmControl::setServo(int servo, int pulsewidth, int step)
 {
 	while (abs(gpioGetServoPulsewidth(servo) - pulsewidth) > step / 2 + 1)
