@@ -6,7 +6,7 @@ bool Config::DISPLAY_STREAM = true;
 
 bool Config::DISPLAY_COLOR_THRESHOLD = false;
 
-bool Config::DISPLAY_PID_CONFIG = false; 
+bool Config::DISPLAY_PID_CONFIG = true;
 
 // Active
 
@@ -15,7 +15,7 @@ bool Config::ARM = true;
 
 // Color Threshold
 
-int Config::lowRed[] = {160, 50, 30};
+int Config::lowRed[] = {160, 50, 50};
 int Config::highRed[] = {5, 255, 255};
 
 int Config::lowGreen[] = {40, 105, 60};
@@ -28,9 +28,9 @@ int Config::highBlue[] = {125, 255, 255};
 
 float Config::ALPHA = 100.0f;
 
-float Config::VELOCITY = 30.0f;
+float Config::VELOCITY = 50.0f; //30f
 
-float Config::MANUAL_VELOCITY = 50.0f;
+float Config::MAX_VELOCITY = 100.0f;
 	
 float Config::KP = 30.0f;
 	

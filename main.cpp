@@ -25,6 +25,10 @@ int main(int argc, char *argv[])
     cout << "Color   : " << ballColor << endl;
 
     BallPicker ballPicker;
+    ballPicker.setAngle(angle);
+    ballPicker.setDuration(duration);
+    ballPicker.setColor(ballColor);
+
     int result = ballPicker.start();
     return result;
 }

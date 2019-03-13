@@ -28,6 +28,7 @@ public:
 
     void setAngle(int angle);
     void setDuration(int duration);
+    void setColor(int color);
 	
 	enum Mode {
 		SEARCH_BALL,

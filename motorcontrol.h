@@ -21,8 +21,8 @@ public:
     void init();
     void stop();
     void move_forward(float, float);
+    void move_forward(float);
     void move_back(float);
-    void manual_move(float, float);
     
 protected:
 

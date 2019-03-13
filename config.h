@@ -15,7 +15,7 @@ public:
 	
 	static float VELOCITY;
 	
-	static float MANUAL_VELOCITY;
+    static float MAX_VELOCITY;
 	
 	static float KP;
 	

@@ -66,7 +66,7 @@ int BallPicker::start()
                 if (findBallTime <= 0) mode = PICK_BALL;
                 error = - error / 5.0f;
                 cout << error << endl;
-                motor.move_forward(error, 1);
+                motor.move_forward(error);
             }
 		}
 
@@ -91,6 +91,11 @@ void BallPicker::setAngle(int angle)
 void BallPicker::setDuration(int duration)
 {
     this->duration = duration;
+}
+
+void BallPicker::setColor(int color)
+{
+    this->ballColor = color;
 }
 
 void BallPicker::init()
