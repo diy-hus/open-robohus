@@ -3,6 +3,11 @@
 MotorControl::MotorControl()
 {
 }
+/*
+Initial Pusle and direction for motor.
+Using soft PWM, any hardpin can be use
+P,I,D factor can be change in here by active trackbar in config file
+*/
 
 void MotorControl::init()
 {
@@ -26,7 +31,9 @@ MotorControl::~MotorControl()
 {
     stop();
 }
-
+/*
+we need pull_up with 1.2kOhm to Vcc from motor pin
+*/
 void MotorControl::stop()
 {
     softPwmWrite(Config::sPWM1_1, 0);
@@ -35,6 +42,10 @@ void MotorControl::stop()
     softPwmWrite(Config::sPWM2_2, 0);
 }
 
+/*
+to keep moving robot forward when detect ball, f is limitation factor, f will be decrease if robot closer the ball 
+PID affect to error from robot to center of ball
+*/
 void MotorControl::move_forward(float error, float f)
 {
 
@@ -46,7 +57,10 @@ void MotorControl::move_forward(float error, float f)
     left_forward(Config::VELOCITY * f + change);
     right_forward(Config::VELOCITY * f - change);
 }
-
+/*
+to keep moving robot forward when start.
+PID affect to angle error 
+*/
 void MotorControl::move_forward(float error)
 {
     kP = bP / 100.0;
@@ -57,6 +71,9 @@ void MotorControl::move_forward(float error)
     left_forward(Config::MAX_VELOCITY + change);
     right_forward(Config::MAX_VELOCITY - change);
 }
+/*
+to drive robot backward when it picked up the ball
+*/
 
 void MotorControl::move_back(float val)
 {
@@ -117,5 +134,3 @@ int MotorControl::middle(int value, int min, int max)
         value = min;
     return value;
 }
-
-
