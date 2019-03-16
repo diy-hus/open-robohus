@@ -4,16 +4,20 @@
 
 bool Config::DISPLAY_STREAM = true;
 
-bool Config::DISPLAY_COLOR_THRESHOLD = false; //for debug HSV value of frame
+bool Config::DISPLAY_COLOR_THRESHOLD = false;
 
-bool Config::DISPLAY_PID_CONFIG = true; //we can changing P, I, D factor while robot moving
+bool Config::DISPLAY_PID_CONFIG = false; 
 
 // Active
 
 bool Config::MOTOR = true;
 bool Config::ARM = true;
 
-// Color Threshold - need calibrate before running
+// Servo Origin
+int Config::SERVO1_ORIG = 1275;
+int Config::SERVO2_ORIG = 1325;
+
+// Color Threshold
 
 int Config::lowRed[] = {160, 50, 50};
 int Config::highRed[] = {5, 255, 255};
@@ -28,13 +32,13 @@ int Config::highBlue[] = {125, 255, 255};
 
 float Config::ALPHA = 100.0f;
 
-float Config::VELOCITY = 50.0f; //30f initial velocity of finding ball moving
+float Config::VELOCITY = 50.0f;
 
-float Config::MAX_VELOCITY = 100.0f; //initial velocity of start moving
+float Config::MAX_VELOCITY = 80.0f;
 	
-float Config::KP = 30.0f;
+float Config::KP = 20.0f;
 	
-float Config::KI = 1.0f;
+float Config::KI = 3.0f;
 	
 float Config::KD = 5.0f;
 
@@ -50,13 +54,13 @@ int Config::BTN4 = 22;
 
 // SoftPWM Pin
 
-int Config::sPWM1_1 = 16;
+int Config::sPWM2_1 = 16;
 
-int Config::sPWM1_2 = 6;
+int Config::sPWM2_2 = 6;
 
-int Config::sPWM2_1 = 31;
+int Config::sPWM1_1 = 31;
 
-int Config::sPWM2_2 = 11;
+int Config::sPWM1_2 = 11;
 
 // Servo Pin
 

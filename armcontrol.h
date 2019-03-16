@@ -16,15 +16,16 @@ class ArmControl
 {
 public:
     ArmControl();
-		
-	void idle();
-	
-	void pickUp(float, float, float);
-	
-	void drop();
-	
-	void setServo(int, int, int step = 10);
-		};
+
+    void originState();
+
+    void pickUp(float, float, float);
+
+    void drop();
+
+    void setServo(int, float, float step = 5.0f);
+
+};
 
 #endif // ARMCONTROL_H
 

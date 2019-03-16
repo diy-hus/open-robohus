@@ -132,7 +132,7 @@ void BallPicker::init()
 	
 	motor.init();
 	
-	arm.idle();
+	arm.originState();
 }
 
 void BallPicker::process(const vector<Vec3f> &ballList)
@@ -172,10 +172,11 @@ void BallPicker::process(const vector<Vec3f> &ballList)
         float dstDistance = 25.0f;
 
 		float error = (float) (x - WIDTH / 2) / (WIDTH / 2);
-        float yPos = HEIGHT / 2 - y;
+        int yPos = HEIGHT / 2 - y;
         float distance = calcDistance(max_radius, yPos);
+        float height = calcHeight(distance, yPos);
 
-        if (yPos < 0) dstDistance = 20.0f;
+        cout << distance << " " << height << endl;
 
         if (distance > dstDistance && Config::MOTOR) {
             float x = dstDistance / distance;
@@ -186,7 +187,7 @@ void BallPicker::process(const vector<Vec3f> &ballList)
             motor.stop();
             if (frameSkip == 0 && Config::ARM){
                 delay(100);
-                arm.pickUp(error, yPos, distance);
+                arm.pickUp(error, height, distance);
                 delay(100);
                 motor.move_back(0);
                 delay(2500);
@@ -209,11 +210,19 @@ void BallPicker::process(const vector<Vec3f> &ballList)
     }
 }
 
-float BallPicker::calcDistance(float radius, float high)
+float BallPicker::calcDistance(float radius, int yPos)
 {
     static float f = 141.25f;
-    static float height = 4.0f;
-    return f * height / radius;
+    static float width = 4.0f;
+    float angle = atan((float) yPos / (HEIGHT / 2) * tan(24.4 * DEG_TO_RAD)) + 8 * DEG_TO_RAD;
+    float distance = f * width / radius * cos(angle);
+    return distance;
+}
+
+float BallPicker::calcHeight(float distance, int yPos)
+{
+    float angle = atan((float) yPos / (HEIGHT / 2) * tan(24.4 * DEG_TO_RAD)) + 8 * DEG_TO_RAD;
+    return distance * tan(angle) + 10;
 }
 
 void BallPicker::drawBall(const vector<Vec3f> &balls)

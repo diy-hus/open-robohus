@@ -16,6 +16,10 @@ public:
 	static float VELOCITY;
 	
     static float MAX_VELOCITY;
+
+    static int SERVO1_ORIG;
+
+    static int SERVO2_ORIG;
 	
 	static float KP;
 	

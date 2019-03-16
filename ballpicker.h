@@ -39,8 +39,9 @@ private:
 	void init();
     void drawBall(const vector<Vec3f> &);
     void process(const vector<Vec3f> &);
-    float calcDistance(float radius, float height);
-	
+    float calcDistance(float radius, int yPos);
+    float calcHeight(float distance, int yPos);
+
 	int mode = SEARCH_BALL;
 
     int low[3] = {0, 0, 0};

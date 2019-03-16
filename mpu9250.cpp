@@ -212,6 +212,7 @@ void MPU9250::initMPU9250()
 
 void MPU9250::calibrateMPU9250()
 {
+    angleGyro = 0;
     for (uint8_t i = 0; i < 100; i++)
     {
         readGyroData(gyroCount);
@@ -220,6 +221,7 @@ void MPU9250::calibrateMPU9250()
         origGyro[0] += gyroCount[0] * gRes;
         origGyro[1] += gyroCount[1] * gRes;
         origGyro[2] += gyroCount[2] * gRes;
+        delay(25);
     }
 
     origGyro[0] /= 100.0f;
