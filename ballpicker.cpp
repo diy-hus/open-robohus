@@ -8,7 +8,6 @@ BallPicker::BallPicker(): capture(VideoCapture(0)),
 
 int BallPicker::start()
 {
-    float findBallTime = duration;
 	while(true){
 		char key = waitKey(1);
 		
@@ -20,8 +19,8 @@ int BallPicker::start()
         if(digitalRead (Config::BTN2) == LOW)
 		{
             stated = true;
-            sensor.calibrateMPU9250();
-            delay(250);
+            motor.move(angle, duration);
+            frameSkip = 10;
 		}
 
         if(digitalRead (Config::BTN3) == LOW)
@@ -53,20 +52,9 @@ int BallPicker::start()
 		
         if (stated){
 			if (frameSkip > 0) frameSkip--;
-            if (mode == PICK_BALL)
-            {
+            if (frameSkip == 0) {
                 detect.detectBall(src, ballColor);
                 process(detect.getBallList());
-            }
-            else
-            {
-                sensor.updateGyro();
-                float error = sensor.angleGyro - angle;
-                findBallTime -= timer.getDeltaTime();
-                if (findBallTime <= 0) mode = PICK_BALL;
-                error = - error / 5.0f;
-                cout << error << endl;
-                motor.move_forward(error);
             }
 		}
 
@@ -100,8 +88,6 @@ void BallPicker::setColor(int color)
 
 void BallPicker::init()
 {
-    sensor.initMPU9250();
-
 	namedWindow( "Origin", CV_WINDOW_AUTOSIZE );
 
     if (Config::DISPLAY_COLOR_THRESHOLD)
@@ -176,7 +162,7 @@ void BallPicker::process(const vector<Vec3f> &ballList)
         float distance = calcDistance(max_radius, yPos);
         float height = calcHeight(distance, yPos);
 
-        cout << distance << " " << height << endl;
+        cout << distance << "  " << height << endl;
 
         if (distance > dstDistance && Config::MOTOR) {
             float x = dstDistance / distance;
@@ -185,7 +171,7 @@ void BallPicker::process(const vector<Vec3f> &ballList)
         }
         else {
             motor.stop();
-            if (frameSkip == 0 && Config::ARM){
+            if (Config::ARM){
                 delay(100);
                 arm.pickUp(error, height, distance);
                 delay(100);
@@ -212,10 +198,13 @@ void BallPicker::process(const vector<Vec3f> &ballList)
 
 float BallPicker::calcDistance(float radius, int yPos)
 {
-    static float f = 141.25f;
+    static float f = 148.0f;
     static float width = 4.0f;
-    float angle = atan((float) yPos / (HEIGHT / 2) * tan(24.4 * DEG_TO_RAD)) + 8 * DEG_TO_RAD;
-    float distance = f * width / radius * cos(angle);
+    float angle = atan((float) yPos / (HEIGHT / 2) * tan(24.4 * DEG_TO_RAD));
+
+    radius -= 17.2864 * pow(angle, 2) - 0.9397 * angle; // camera calibrate
+
+    float distance = f * width / radius * cos(angle + 8 * DEG_TO_RAD);
     return distance;
 }
 

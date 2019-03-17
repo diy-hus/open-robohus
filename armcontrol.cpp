@@ -53,7 +53,7 @@ void ArmControl::originState()
 
 void ArmControl::pickUp(float error, float b, float a)
 {	
-    a -= 1; // distance from origin arm to camera
+    a -= 3; // distance from origin arm to camera
     b -= 12; // height
 
     a *= 10; // cm to mm

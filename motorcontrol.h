@@ -9,6 +9,8 @@
 #include <stdlib.h>
 
 #include "config.h"
+#include "mpu9250.h"
+#include "timer.h"
 
 using namespace std;
 using namespace cv;
@@ -20,11 +22,14 @@ public:
     ~MotorControl();
     void init();
     void stop();
-    void move_forward(float, float);
-    void move_forward(float);
+    void move_forward(float, float, int velocity = Config::VELOCITY);
+    void move(float, float);
+    void rotateTo(float angle);
     void move_back(float);
     
 protected:
+
+    MPU9250 sensor;
 
     int bP;
     int bI;
@@ -41,7 +46,7 @@ protected:
     float pre_error = 0;
     float pre_veloc_error = 0;
 
-    int pidCalculate(float);
+    int pidCalculate(float, float kP = Config::KP1, float kI = Config::KI1, float kD = Config::KD1);
     void left_forward(int val);
     void right_forward(int val);
     void left_back(int val);

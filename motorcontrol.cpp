@@ -11,14 +11,16 @@ P,I,D factor can be change in here by active trackbar in config file
 
 void MotorControl::init()
 {
+    sensor.initMPU9250();
+
     softPwmCreate(Config::sPWM1_1, 0, 100);
     softPwmCreate(Config::sPWM1_2, 0, 100);
     softPwmCreate(Config::sPWM2_1, 0, 100);
     softPwmCreate(Config::sPWM2_2, 0, 100);
 
-    bP = cvRound(Config::KP * 100);
-    bI = cvRound(Config::KI * 100);
-    bD = cvRound(Config::KD * 100);
+    bP = cvRound(Config::KP1 * 100);
+    bI = cvRound(Config::KI1 * 100);
+    bD = cvRound(Config::KD1 * 100);
     
     if (Config::DISPLAY_PID_CONFIG){
         cvCreateTrackbar("kP", "Origin", &bP, 5000);
@@ -46,7 +48,7 @@ void MotorControl::stop()
 to keep moving robot forward when detect ball, f is limitation factor, f will be decrease if robot closer the ball 
 PID affect to error from robot to center of ball
 */
-void MotorControl::move_forward(float error, float f)
+void MotorControl::move_forward(float error, float f, int velocity)
 {
 
     kP = bP / 100.0;
@@ -54,22 +56,47 @@ void MotorControl::move_forward(float error, float f)
     kD = bD / 100.0;
     int change = pidCalculate(error);
 
-    left_forward(Config::VELOCITY * f + change);
-    right_forward(Config::VELOCITY * f - change);
+    left_forward(velocity * f + change);
+    right_forward(velocity * f - change);
 }
-/*
-to keep moving robot forward when start.
-PID affect to angle error 
-*/
-void MotorControl::move_forward(float error)
-{
-    kP = bP / 100.0;
-    kI = bI / 100.0;
-    kD = bD / 100.0;
-    int change = pidCalculate(error);
 
-    left_forward(Config::MAX_VELOCITY + change);
-    right_forward(Config::MAX_VELOCITY - change);
+void MotorControl::move(float angle, float duration)
+{
+    Timer timer;
+    timer.update();
+    sensor.calibrateMPU9250();
+    while (duration >= 0) {
+        timer.update();
+        sensor.updateGyro();
+        float error = sensor.angleGyro - angle;
+        duration -= timer.getDeltaTime();
+        error = - error / 5.0f;
+        cout << error << endl;
+        int change = pidCalculate(error, Config::KP2, Config::KI2, Config::KD2);
+
+        left_forward(Config::MAX_VELOCITY + change);
+        right_forward(Config::MAX_VELOCITY - change);
+    }
+    stop();
+}
+
+void MotorControl::rotateTo(float angle)
+{
+    sensor.updateGyro();
+    while (abs(sensor.angleGyro - angle) > 10) {
+        sensor.updateGyro();
+        float error = sensor.angleGyro - angle;
+        error = -error;
+        cout << sensor.angleGyro << endl;
+        if (error > 0) {
+            left_forward(20);
+            right_back(20);
+        } else {
+            left_back(20);
+            right_forward(20);
+        }
+    }
+    stop();
 }
 /*
 to drive robot backward when it picked up the ball
@@ -81,7 +108,7 @@ void MotorControl::move_back(float val)
     right_back(Config::VELOCITY + val * Config::VELOCITY / 2);
 }
 
-int MotorControl::pidCalculate(float error)
+int MotorControl::pidCalculate(float error, float kP, float kI, float kD)
 {
     float Pout = kP * error;
 

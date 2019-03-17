@@ -21,11 +21,14 @@ public:
 
     static int SERVO2_ORIG;
 	
-	static float KP;
-	
-	static float KI;
-	
-	static float KD;	
+    static float KP1;
+    static float KI1;
+    static float KD1;
+
+    static float KP2;
+    static float KI2;
+    static float KD2;
+
 
     static bool MOTOR;
 

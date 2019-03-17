@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     wiringPiSetup();
 
     int angle = 0;
-    int duration = 10;
+    int duration = 7;
     int ballColor = Config::RED;
 
     if (argc == 4) {

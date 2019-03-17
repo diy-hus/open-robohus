@@ -30,19 +30,12 @@ public:
     void setDuration(int duration);
     void setColor(int color);
 	
-	enum Mode {
-		SEARCH_BALL,
-		PICK_BALL
-	};
-	
 private:
 	void init();
     void drawBall(const vector<Vec3f> &);
     void process(const vector<Vec3f> &);
     float calcDistance(float radius, int yPos);
     float calcHeight(float distance, int yPos);
-
-	int mode = SEARCH_BALL;
 
     int low[3] = {0, 0, 0};
     int high[3] = {179, 255, 255};
@@ -67,7 +60,6 @@ private:
 	DetectBall detect;
 	ArmControl arm;
 	VideoCapture capture;
-    MPU9250 sensor;
 };
 
 #endif
