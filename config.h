@@ -18,8 +18,9 @@ public:
     static float MAX_VELOCITY;
 
     static int SERVO1_ORIG;
-
     static int SERVO2_ORIG;
+    static int SERVO3_ORIG;
+    static int SERVO4_ORIG;
 	
     static float KP1;
     static float KI1;
@@ -51,6 +52,8 @@ public:
 	static int BTN2;
 	static int BTN3;
 	static int BTN4;
+
+    static int BL;
 	
 	static int sPWM1_1;
 	static int sPWM1_2;

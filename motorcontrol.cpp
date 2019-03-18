@@ -54,7 +54,7 @@ void MotorControl::move_forward(float error, float f, int velocity)
     kP = bP / 100.0;
     kI = bI / 100.0;
     kD = bD / 100.0;
-    int change = pidCalculate(error);
+    int change = pidCalculate(error, kP, kI, kD);
 
     left_forward(velocity * f + change);
     right_forward(velocity * f - change);

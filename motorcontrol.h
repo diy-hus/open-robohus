@@ -46,7 +46,7 @@ protected:
     float pre_error = 0;
     float pre_veloc_error = 0;
 
-    int pidCalculate(float, float kP = Config::KP1, float kI = Config::KI1, float kD = Config::KD1);
+    int pidCalculate(float, float kP, float kI, float kD);
     void left_forward(int val);
     void right_forward(int val);
     void left_back(int val);

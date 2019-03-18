@@ -8,17 +8,18 @@ BallPicker::BallPicker(): capture(VideoCapture(0)),
 
 int BallPicker::start()
 {
+    digitalWrite(Config::BL, HIGH);
+    delay(500);
+    digitalWrite(Config::BL, LOW);
 	while(true){
 		char key = waitKey(1);
 		
 		if (key == 'q') break;
-        if (key == 'r') ballColor = Config::RED;
-        if (key == 'g') ballColor = Config::GREEN;
-        if (key == 'b') ballColor = Config::BLUE;
+        if (key == 'r') started = true;
 		
         if(digitalRead (Config::BTN2) == LOW)
 		{
-            stated = true;
+            started = true;
             motor.move(angle, duration);
             frameSkip = 10;
 		}
@@ -50,7 +51,7 @@ int BallPicker::start()
             imshow("Threshold", imgThresholded);
         }
 		
-        if (stated){
+        if (started){
 			if (frameSkip > 0) frameSkip--;
             if (frameSkip == 0) {
                 detect.detectBall(src, ballColor);
@@ -115,6 +116,8 @@ void BallPicker::init()
 
 	pinMode (Config::BTN4, INPUT);
 	pullUpDnControl (Config::BTN4, PUD_UP) ;
+
+    pinMode (Config::BL, OUTPUT);
 	
 	motor.init();
 	
@@ -133,6 +136,7 @@ void BallPicker::process(const vector<Vec3f> &ballList)
                 x = ballList[i][0];
                 y = ballList[i][1];
                 max_radius = ballList[i][2];
+                preError = (float) (ballList[i][0] - WIDTH / 2) / (WIDTH / 2);
             }
         }
     }
@@ -150,6 +154,7 @@ void BallPicker::process(const vector<Vec3f> &ballList)
             }
         }
         if (nearest_error == -1) preError = 0;
+        else preError = nearest_error;
     }
 
     if (ballList.size() > 0) {

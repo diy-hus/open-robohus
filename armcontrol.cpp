@@ -4,9 +4,9 @@
 
 int run = 1;
 
-int inRange(int value, int min = 500, int max = 2400);
+float inRange(float value, float min = 0, float max = 180);
 
-int inRange(int value, int min, int max)
+float inRange(float value, float min, float max)
 {
     if (value > max) value = max;
     else if (value < min) value = min;
@@ -27,6 +27,7 @@ void stop(int signum)
     gpioServo(Config::SERVO1, 0);
     gpioServo(Config::SERVO2, 0);
     gpioServo(Config::SERVO3, 0);
+    gpioServo(Config::SERVO4, 0);
     gpioTerminate();
 }
 
@@ -38,16 +39,16 @@ ArmControl::ArmControl()
 
 void ArmControl::originState()
 {
-    gpioServo(Config::SERVO1, 900);
+    setServo(Config::SERVO1, pulse2Angle(Config::SERVO1_ORIG) + 37.5, 0);
     time_sleep(0.5);
 
-    gpioServo(Config::SERVO2, 1300);
+    setServo(Config::SERVO2, pulse2Angle(Config::SERVO2_ORIG), 0);
     time_sleep(0.5);
 
-    gpioServo(Config::SERVO3, 700);
+    setServo(Config::SERVO3, pulse2Angle(Config::SERVO3_ORIG), 0);
     time_sleep(0.5);
 
-    gpioServo(Config::SERVO4, 1500);
+    setServo(Config::SERVO4, pulse2Angle(Config::SERVO4_ORIG), 0);
     time_sleep(0.5);
 }
 
@@ -63,51 +64,51 @@ void ArmControl::pickUp(float error, float b, float a)
     servo1Angle = pulse2Angle(Config::SERVO1_ORIG) - servo1Angle * RAD_TO_DEG;
     servo2Angle = pulse2Angle(Config::SERVO2_ORIG) - servo2Angle * RAD_TO_DEG;
 
-    setServo(Config::SERVO1, 120);
-    setServo(Config::SERVO4, 90 - error * 80);
-    time_sleep(0.5);
-
+    setServo(Config::SERVO1, pulse2Angle(Config::SERVO1_ORIG) + 7.5);
     time_sleep(0.2);
+    setServo(Config::SERVO4, pulse2Angle(Config::SERVO4_ORIG) - error * 80);
+    time_sleep(0.5);
 
     setServo(Config::SERVO2, servo2Angle);
     time_sleep(0.2);
 
-    setServo(Config::SERVO3, 100);
+    setServo(Config::SERVO3, pulse2Angle(Config::SERVO3_ORIG) - 75);
     time_sleep(0.2);
 
     setServo(Config::SERVO1, servo1Angle, 2.0f);
     time_sleep(0.2);
 
-    setServo(Config::SERVO3, 180);
+    setServo(Config::SERVO3, pulse2Angle(Config::SERVO3_ORIG));
     time_sleep(0.2);
 }
 
 void ArmControl::drop()
 {
-    setServo(Config::SERVO1, 140, 10);
+    setServo(Config::SERVO1, pulse2Angle(Config::SERVO1_ORIG) + 37.5, 10);
     time_sleep(0.2);
-    setServo(Config::SERVO4, 0);
+    setServo(Config::SERVO4, pulse2Angle(Config::SERVO4_ORIG) - 90);
     time_sleep(0.5);
-    setServo(Config::SERVO3, 60, 0);
+    setServo(Config::SERVO3, pulse2Angle(Config::SERVO3_ORIG) - 75, 0);
     time_sleep(0.5);
-    setServo(Config::SERVO3, 175, 0);
+    setServo(Config::SERVO3, pulse2Angle(Config::SERVO3_ORIG), 0);
     time_sleep(0.5);
-    setServo(Config::SERVO4, 90);
+    setServo(Config::SERVO4, pulse2Angle(Config::SERVO4_ORIG));
     time_sleep(0.5);
-    setServo(Config::SERVO2, 110);
+    setServo(Config::SERVO2, pulse2Angle(Config::SERVO2_ORIG));
     time_sleep(0.5);
 }
 
 void ArmControl::setServo(int servo, float angle, float step)
 {
-    if (step != 0) {
+    angle = inRange(angle);
+    if (step != 0 && gpioGetServoPulsewidth(servo) != 0) {
         while (abs(gpioGetServoPulsewidth(servo) - angle2Pulse(angle)) > step * 10 / 2)
         {
             if (gpioGetServoPulsewidth(servo) > angle2Pulse(angle))
             {
-                gpioServo(servo, gpioGetServoPulsewidth(servo) - step * 10);
+                gpioServo(servo, round(inRange(gpioGetServoPulsewidth(servo) - step * 10, 600, 2400)));
             } else {
-                gpioServo(servo, gpioGetServoPulsewidth(servo) + step * 10);
+                gpioServo(servo, round(inRange(gpioGetServoPulsewidth(servo) + step * 10, 600, 2400)));
             }
             time_sleep(0.02);
         }

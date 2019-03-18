@@ -42,7 +42,7 @@ private:
 
     float preError = 0;
 	
-    bool stated = false;
+    bool started = false;
 	int ballColor = 0;
     int angle = 0;
     int duration = 10;

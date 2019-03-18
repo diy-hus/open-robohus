@@ -8,6 +8,8 @@ bool Config::DISPLAY_COLOR_THRESHOLD = false;
 
 bool Config::DISPLAY_PID_CONFIG = false; 
 
+int Config::BL = 30;
+
 // Active
 
 bool Config::MOTOR = true;
@@ -16,6 +18,8 @@ bool Config::ARM = true;
 // Servo Origin
 int Config::SERVO1_ORIG = 1275;
 int Config::SERVO2_ORIG = 1325;
+int Config::SERVO3_ORIG = 600;
+int Config::SERVO4_ORIG = 1500;
 
 // Color Threshold
 
