@@ -5,4 +5,10 @@ edit excuteable Fruitpicker path in UISystem
 add UISystem auto start to bashrc
 add @lxterminal to /etc/xdg/lxsession/LXDE-pi/autostart
 -----------
-done
+Using Servo file to calibrate center of arm
+set permission for Servo file to 777
+sudo ./Servo
+PCM pin <-> Pulse
+500 < Pulse < 2500
+First, we should using 1500 pulse
+zero point to config file
