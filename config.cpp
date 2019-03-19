@@ -16,7 +16,7 @@ bool Config::MOTOR = true;
 bool Config::ARM = true;
 
 // Servo Origin
-int Config::SERVO1_ORIG = 1275;
+int Config::SERVO1_ORIG = 1400;
 int Config::SERVO2_ORIG = 1325;
 int Config::SERVO3_ORIG = 600;
 int Config::SERVO4_ORIG = 1500;
@@ -40,8 +40,8 @@ float Config::VELOCITY = 50.0f;
 
 float Config::MAX_VELOCITY = 80.0f;
 	
-float Config::KP1 = 20.0f;
-float Config::KI1 = 1.0f;
+float Config::KP1 = 50.0f;
+float Config::KI1 = 0.0f;
 float Config::KD1 = 5.0f;
 
 float Config::KP2 = 7.0f;

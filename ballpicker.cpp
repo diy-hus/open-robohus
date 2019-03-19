@@ -9,7 +9,11 @@ BallPicker::BallPicker(): capture(VideoCapture(0)),
 int BallPicker::start()
 {
     digitalWrite(Config::BL, HIGH);
-    delay(500);
+    delay(250);
+    digitalWrite(Config::BL, LOW);
+    delay(250);
+    digitalWrite(Config::BL, HIGH);
+    delay(250);
     digitalWrite(Config::BL, LOW);
 	while(true){
 		char key = waitKey(1);
@@ -21,6 +25,7 @@ int BallPicker::start()
 		{
             started = true;
             motor.move(angle, duration);
+            motor.reset();
             frameSkip = 10;
 		}
 
@@ -31,6 +36,7 @@ int BallPicker::start()
         }
 
         timer.update();
+        motor.update();
         capture >> src;
         src.convertTo(src, -1, Config::ALPHA / 100.0f, 0);
         resize(src, src, frame);
@@ -59,9 +65,11 @@ int BallPicker::start()
             }
 		}
 
-        int fps = cvRound(1.0 / timer.getDeltaTime());
-        putText(src, to_string(fps), Point2f(5,15), FONT_HERSHEY_PLAIN, 1,  Scalar(0,255,0));
-        imshow( "Origin", src);
+        if (Config::DISPLAY_STREAM) {
+            int fps = cvRound(1.0 / timer.getDeltaTime());
+            putText(src, to_string(fps), Point2f(5,15), FONT_HERSHEY_PLAIN, 1,  Scalar(0,255,0));
+            imshow( "Origin", src);
+        }
     }
     capture.release();
     return 0;
@@ -127,15 +135,15 @@ void BallPicker::init()
 void BallPicker::process(const vector<Vec3f> &ballList)
 {
     float x, y;
-    float max_radius = 0;
+    float radius = 0;
     if (preError == 0)
     {
         for( size_t i = 0; i < ballList.size(); i++ )
         {
-            if (ballList[i][2] > max_radius){
+            if (ballList[i][2] > radius){
                 x = ballList[i][0];
                 y = ballList[i][1];
-                max_radius = ballList[i][2];
+                radius = ballList[i][2];
                 preError = (float) (ballList[i][0] - WIDTH / 2) / (WIDTH / 2);
             }
         }
@@ -149,11 +157,14 @@ void BallPicker::process(const vector<Vec3f> &ballList)
             if (abs(preError - error) < abs(preError - nearest_error)){
                 x = ballList[i][0];
                 y = ballList[i][1];
-                max_radius = ballList[i][2];
+                radius = ballList[i][2];
                 nearest_error = error;
             }
         }
-        if (nearest_error == -1) preError = 0;
+        if (nearest_error == -1) {
+            preError = 0;
+            return;
+        }
         else preError = nearest_error;
     }
 
@@ -161,13 +172,15 @@ void BallPicker::process(const vector<Vec3f> &ballList)
         line(src, Point(WIDTH / 2, HEIGHT / 2), Point(cvRound(x), cvRound(y)), Scalar(0,255,0), 2, 4, 0);
 
         float dstDistance = 25.0f;
-
-		float error = (float) (x - WIDTH / 2) / (WIDTH / 2);
         int yPos = HEIGHT / 2 - y;
-        float distance = calcDistance(max_radius, yPos);
+        float distance = calcDistance(radius, yPos);
         float height = calcHeight(distance, yPos);
+        float error = (float) (x - WIDTH / 2) / (WIDTH / 2);
 
-        cout << distance << "  " << height << endl;
+        if (distance < 0) return;
+        if (height < 5) dstDistance = 30.0f;
+
+        cout << error << " " << distance << "  " << height << endl;
 
         if (distance > dstDistance && Config::MOTOR) {
             float x = dstDistance / distance;
@@ -178,14 +191,17 @@ void BallPicker::process(const vector<Vec3f> &ballList)
             motor.stop();
             if (Config::ARM){
                 delay(100);
-                arm.pickUp(error, height, distance);
+                arm.pickUp(error, distance, height);
                 delay(100);
                 motor.move_back(0);
                 delay(2500);
                 motor.stop();
                 delay(100);
+                motor.rotateTo(1000);
+                delay(500);
                 arm.drop();
                 delay(100);
+                motor.rotateTo(0);
                 frameSkip = 10;
             }
         }

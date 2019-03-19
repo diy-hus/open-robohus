@@ -22,6 +22,8 @@ public:
     ~MotorControl();
     void init();
     void stop();
+    void update();
+    void reset();
     void move_forward(float, float, int velocity = Config::VELOCITY);
     void move(float, float);
     void rotateTo(float angle);

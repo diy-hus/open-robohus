@@ -44,6 +44,17 @@ void MotorControl::stop()
     softPwmWrite(Config::sPWM2_2, 0);
 }
 
+void MotorControl::update()
+{
+    sensor.updateGyro();
+}
+
+void MotorControl::reset()
+{
+    pre_error = 0;
+    integral = 0;
+}
+
 /*
 to keep moving robot forward when detect ball, f is limitation factor, f will be decrease if robot closer the ball 
 PID affect to error from robot to center of ball
@@ -71,7 +82,6 @@ void MotorControl::move(float angle, float duration)
         float error = sensor.angleGyro - angle;
         duration -= timer.getDeltaTime();
         error = - error / 5.0f;
-        cout << error << endl;
         int change = pidCalculate(error, Config::KP2, Config::KI2, Config::KD2);
 
         left_forward(Config::MAX_VELOCITY + change);
@@ -83,17 +93,17 @@ void MotorControl::move(float angle, float duration)
 void MotorControl::rotateTo(float angle)
 {
     sensor.updateGyro();
-    while (abs(sensor.angleGyro - angle) > 10) {
+    while (abs(sensor.angleGyro - angle) > 5) {
         sensor.updateGyro();
         float error = sensor.angleGyro - angle;
         error = -error;
         cout << sensor.angleGyro << endl;
         if (error > 0) {
-            left_forward(20);
-            right_back(20);
+            left_forward(30);
+            right_back(30);
         } else {
-            left_back(20);
-            right_forward(20);
+            left_back(30);
+            right_forward(30);
         }
     }
     stop();
