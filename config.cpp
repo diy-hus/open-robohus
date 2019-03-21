@@ -40,7 +40,7 @@ float Config::VELOCITY = 50.0f;
 
 float Config::MAX_VELOCITY = 80.0f;
 	
-float Config::KP1 = 50.0f;
+float Config::KP1 = 20.0f;
 float Config::KI1 = 0.0f;
 float Config::KD1 = 5.0f;
 

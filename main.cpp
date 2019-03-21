@@ -13,11 +13,18 @@ int main(int argc, char *argv[])
     int angle = 0;
     int duration = 10;
     int ballColor = Config::RED;
+    float offsetX = 0;
+    float offsetY = 0;
 
-    if (argc == 4) {
+    if (argc >= 4) {
         angle = atoi(argv[1]);
         duration = atoi(argv[2]);
         ballColor = atoi(argv[3]);
+    }
+
+    if (argc == 6) {
+        offsetX = atoi(argv[4]);
+        offsetY = atoi(argv[5]);
     }
 
     cout << "Angle   : " << angle << endl;
@@ -28,6 +35,7 @@ int main(int argc, char *argv[])
     ballPicker.setAngle(angle);
     ballPicker.setDuration(duration);
     ballPicker.setColor(ballColor);
+    ballPicker.setOffset(offsetX, offsetY);
 
     int result = ballPicker.start();
     return result;

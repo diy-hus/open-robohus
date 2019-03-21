@@ -95,6 +95,12 @@ void BallPicker::setColor(int color)
     this->ballColor = color;
 }
 
+void BallPicker::setOffset(float x, float y)
+{
+    this->offsetX = x;
+    this->offsetY = y;
+}
+
 void BallPicker::init()
 {
 	namedWindow( "Origin", CV_WINDOW_AUTOSIZE );
@@ -170,15 +176,13 @@ void BallPicker::process(const vector<Vec3f> &ballList)
 
     if (ballList.size() > 0) {
         line(src, Point(WIDTH / 2, HEIGHT / 2), Point(cvRound(x), cvRound(y)), Scalar(0,255,0), 2, 4, 0);
-
         float dstDistance = 25.0f;
         int yPos = HEIGHT / 2 - y;
         float distance = calcDistance(radius, yPos);
         float height = calcHeight(distance, yPos);
         float error = (float) (x - WIDTH / 2) / (WIDTH / 2);
 
-        if (distance < 0) return;
-        if (height < 5) dstDistance = 30.0f;
+        if (distance < 5) return;
 
         cout << error << " " << distance << "  " << height << endl;
 
@@ -191,13 +195,13 @@ void BallPicker::process(const vector<Vec3f> &ballList)
             motor.stop();
             if (Config::ARM){
                 delay(100);
-                arm.pickUp(error, distance, height);
+                arm.pickUp(error, distance + offsetX, height + offsetY);
                 delay(100);
                 motor.move_back(0);
                 delay(2500);
                 motor.stop();
                 delay(100);
-                motor.rotateTo(1000);
+                motor.rotateTo(700);
                 delay(500);
                 arm.drop();
                 delay(100);

@@ -29,6 +29,7 @@ public:
     void setAngle(int angle);
     void setDuration(int duration);
     void setColor(int color);
+    void setOffset(float x = 0, float y = 0);
 	
 private:
 	void init();
@@ -46,6 +47,8 @@ private:
 	int ballColor = 0;
     int angle = 0;
     int duration = 10;
+    float offsetX = 0;
+    float offsetY = 0;
 
 	bool run = false;
 	int frameSkip = 0;
