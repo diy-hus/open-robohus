@@ -71,12 +71,16 @@ void MotorControl::move_forward(float error, float f, int velocity)
     right_forward(velocity * f - change);
 }
 
-void MotorControl::move(float angle, float duration)
+bool MotorControl::move(float angle, float duration)
 {
     Timer timer;
     timer.update();
     sensor.calibrateMPU9250();
     while (duration >= 0) {
+        if(digitalRead (Config::BTN3) == LOW)
+        {
+            return 0;
+        }
         timer.update();
         sensor.updateGyro();
         float error = sensor.angleGyro - angle;
@@ -88,16 +92,22 @@ void MotorControl::move(float angle, float duration)
         right_forward(Config::MAX_VELOCITY - change);
     }
     stop();
+    return 1;
 }
 
-void MotorControl::rotateTo(float angle)
+bool MotorControl::rotateTo(float angle)
 {
     sensor.updateGyro();
     while (abs(sensor.angleGyro - angle) > 5) {
+        if(digitalRead (Config::BTN3) == LOW)
+        {
+            return 0;
+        }
+
         sensor.updateGyro();
+
         float error = sensor.angleGyro - angle;
         error = -error;
-        cout << sensor.angleGyro << endl;
         if (error > 0) {
             left_forward(30);
             right_back(30);
@@ -107,6 +117,7 @@ void MotorControl::rotateTo(float angle)
         }
     }
     stop();
+    return 1;
 }
 /*
 to drive robot backward when it picked up the ball

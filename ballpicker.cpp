@@ -24,7 +24,7 @@ int BallPicker::start()
         if(digitalRead (Config::BTN2) == LOW)
 		{
             started = true;
-            motor.move(angle, duration);
+            if (!motor.move(angle, duration)) exit(0);
             motor.reset();
             frameSkip = 10;
 		}
@@ -33,6 +33,11 @@ int BallPicker::start()
         {
             delay(250);
             return 1;
+        }
+
+        if(digitalRead (Config::BTN1) == LOW)
+        {
+            arm.pickUp(0, 20, 20);
         }
 
         timer.update();
@@ -201,11 +206,11 @@ void BallPicker::process(const vector<Vec3f> &ballList)
                 delay(2500);
                 motor.stop();
                 delay(100);
-                motor.rotateTo(700);
+                if (!motor.rotateTo(700)) exit(0);
                 delay(500);
                 arm.drop();
                 delay(100);
-                motor.rotateTo(0);
+                if (!motor.rotateTo(0)) exit(0);
                 frameSkip = 10;
             }
         }

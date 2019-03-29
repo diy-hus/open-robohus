@@ -25,8 +25,8 @@ public:
     void update();
     void reset();
     void move_forward(float, float, int velocity = Config::VELOCITY);
-    void move(float, float);
-    void rotateTo(float angle);
+    bool move(float, float);
+    bool rotateTo(float angle);
     void move_back(float);
     
 protected:
