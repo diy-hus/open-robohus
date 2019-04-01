@@ -54,8 +54,8 @@ void ArmControl::originState()
 
 void ArmControl::pickUp(float error, float a, float b)
 {	
-    a -= 3; // distance from origin arm to camera
-    b -= 12; // height
+    a -= 4; // distance from origin arm to camera
+    b -= 11; // height
 
     a *= 10; // cm to mm
     b *= 10;
@@ -87,8 +87,6 @@ void ArmControl::pickUp(float error, float a, float b)
 
 void ArmControl::drop()
 {
-//    setServo(Config::SERVO4, pulse2Angle(Config::SERVO4_ORIG) - 90);
-//    time_sleep(0.5);
     setServo(Config::SERVO3, pulse2Angle(Config::SERVO3_ORIG) - 75, 0);
     time_sleep(0.5);
     setServo(Config::SERVO3, pulse2Angle(Config::SERVO3_ORIG), 0);

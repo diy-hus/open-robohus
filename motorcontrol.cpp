@@ -109,11 +109,11 @@ bool MotorControl::rotateTo(float angle)
         float error = sensor.angleGyro - angle;
         error = -error;
         if (error > 0) {
-            left_forward(30);
-            right_back(30);
+            left_forward(60);
+            right_back(60);
         } else {
-            left_back(30);
-            right_forward(30);
+            left_back(60);
+            right_forward(60);
         }
     }
     stop();

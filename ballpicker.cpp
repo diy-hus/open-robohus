@@ -24,7 +24,10 @@ int BallPicker::start()
         if(digitalRead (Config::BTN2) == LOW)
 		{
             started = true;
-            if (!motor.move(angle, duration)) exit(0);
+            if (!motor.move(angle, duration)) {
+                motor.stop();
+                exit(0);
+            }
             motor.reset();
             frameSkip = 10;
 		}
@@ -193,8 +196,8 @@ void BallPicker::process(const vector<Vec3f> &ballList)
 
         if (distance > dstDistance && Config::MOTOR) {
             float x = dstDistance / distance;
-            x = 1 - pow(x, 5);
-            motor.move_forward(error, x);
+            x = 1 - pow(x, 3);
+            motor.move_forward(error / x, x);
         }
         else {
             motor.stop();
@@ -206,11 +209,17 @@ void BallPicker::process(const vector<Vec3f> &ballList)
                 delay(2500);
                 motor.stop();
                 delay(100);
-                if (!motor.rotateTo(700)) exit(0);
+                if (!motor.rotateTo(-700)) {
+                    motor.stop();
+                    exit(0);
+                }
                 delay(500);
                 arm.drop();
                 delay(100);
-                if (!motor.rotateTo(0)) exit(0);
+                if (!motor.rotateTo(0)) {
+                    motor.stop();
+                    exit(0);
+                }
                 frameSkip = 10;
             }
         }

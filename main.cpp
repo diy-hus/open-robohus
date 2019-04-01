@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     wiringPiSetup();
 
     int angle = 0;
-    int duration = 10;
+    int duration = 6;
     int ballColor = Config::RED;
     float offsetX = 0;
     float offsetY = 0;
