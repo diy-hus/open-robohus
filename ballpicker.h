@@ -26,6 +26,7 @@ public:
 	int start();
 	bool isStart();
 
+    void setZone(int zone);
     void setAngle(int angle);
     void setDuration(int duration);
     void setColor(int color);
@@ -43,6 +44,7 @@ private:
 
     float preError = 0;
 	
+    int zone = 0;
     bool started = false;
 	int ballColor = 0;
     int angle = 0;
@@ -52,6 +54,7 @@ private:
 
 	bool run = false;
 	int frameSkip = 0;
+    bool isPickUp = false;
 	
     int WIDTH = 320;
     int HEIGHT = 240;

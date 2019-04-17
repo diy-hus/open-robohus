@@ -54,8 +54,8 @@ void ArmControl::originState()
 
 void ArmControl::pickUp(float error, float a, float b)
 {	
-    a -= 4; // distance from origin arm to camera
-    b -= 11; // height
+    a -= 3; // distance from origin arm to camera
+    b -= 14; // height
 
     a *= 10; // cm to mm
     b *= 10;
@@ -113,4 +113,23 @@ void ArmControl::setServo(int servo, float angle, float step)
         }
     }
     gpioServo(servo, angle2Pulse(angle));
+}
+
+void ArmControl::release()
+{
+  /*  setServo(Config::SERVO1, pulse2Angle(Config::SERVO1_ORIG) + 37.5, 0);
+    time_sleep(0.5);
+
+    setServo(Config::SERVO2, pulse2Angle(Config::SERVO2_ORIG), 0);
+    time_sleep(0.5);
+
+    setServo(Config::SERVO3, pulse2Angle(Config::SERVO3_ORIG), 0);
+    time_sleep(0.5);
+
+    setServo(Config::SERVO4, pulse2Angle(Config::SERVO4_ORIG), 0);
+    time_sleep(0.5);
+*/
+    gpioServo(Config::SERVO1, 0);
+    gpioServo(Config::SERVO2, 0);
+    gpioServo(Config::SERVO4, 0);
 }

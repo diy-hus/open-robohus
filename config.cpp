@@ -16,14 +16,14 @@ bool Config::MOTOR = true;
 bool Config::ARM = true;
 
 // Servo Origin
-int Config::SERVO1_ORIG = 1100;
-int Config::SERVO2_ORIG = 2100;
-int Config::SERVO3_ORIG = 900;
+int Config::SERVO1_ORIG = 1250;
+int Config::SERVO2_ORIG = 1700;
+int Config::SERVO3_ORIG = 1000;
 int Config::SERVO4_ORIG = 1500;
 
 // Color Threshold
 
-int Config::lowRed[] = {160, 50, 50};
+int Config::lowRed[] = {160, 50, 60};
 int Config::highRed[] = {7, 255, 255};
 
 int Config::lowGreen[] = {40, 105, 60};
@@ -38,7 +38,7 @@ float Config::ALPHA = 100.0f;
 
 float Config::VELOCITY = 40.0f;
 
-float Config::MAX_VELOCITY = 80.0f;
+float Config::MAX_VELOCITY = 60.0f;
 	
 float Config::KP1 = 50.0f;
 float Config::KI1 = 0.0f;
@@ -60,13 +60,13 @@ int Config::BTN4 = 22;
 
 // SoftPWM Pin
 
-int Config::sPWM1_1 = 16;
+int Config::sPWM1_1 = 11;
 
-int Config::sPWM1_2 = 6;
+int Config::sPWM1_2 = 31;
 
-int Config::sPWM2_1 = 31;
+int Config::sPWM2_1 = 6;
 
-int Config::sPWM2_2 = 11;
+int Config::sPWM2_2 = 16;
 
 // Servo Pin
 

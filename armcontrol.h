@@ -25,6 +25,8 @@ public:
 
     void setServo(int, float, float step = 5.0f);
 
+    void release();
+
 };
 
 #endif // ARMCONTROL_H

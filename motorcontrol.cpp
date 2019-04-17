@@ -53,6 +53,7 @@ void MotorControl::reset()
 {
     pre_error = 0;
     integral = 0;
+    sensor.calibrateMPU9250();
 }
 
 /*
@@ -76,11 +77,18 @@ bool MotorControl::move(float angle, float duration)
     Timer timer;
     timer.update();
     sensor.calibrateMPU9250();
+    Mat src;
     while (duration >= 0) {
         if(digitalRead (Config::BTN3) == LOW)
         {
             return 0;
         }
+
+        capture->read(src);
+        resize(src, src, frame);
+        imshow("Origin", src);
+        waitKey(1);
+
         timer.update();
         sensor.updateGyro();
         float error = sensor.angleGyro - angle;
@@ -97,6 +105,7 @@ bool MotorControl::move(float angle, float duration)
 
 bool MotorControl::rotateTo(float angle)
 {
+    Mat src;
     sensor.updateGyro();
     while (abs(sensor.angleGyro - angle) > 5) {
         if(digitalRead (Config::BTN3) == LOW)
@@ -104,16 +113,21 @@ bool MotorControl::rotateTo(float angle)
             return 0;
         }
 
+        capture->read(src);
+        resize(src, src, frame);
+        imshow("Origin", src);
+        waitKey(1);
+
         sensor.updateGyro();
 
         float error = sensor.angleGyro - angle;
         error = -error;
         if (error > 0) {
-            left_forward(60);
-            right_back(60);
+            left_forward(80);
+            right_back(80);
         } else {
-            left_back(60);
-            right_forward(60);
+            left_back(80);
+            right_forward(80);
         }
     }
     stop();
@@ -123,10 +137,36 @@ bool MotorControl::rotateTo(float angle)
 to drive robot backward when it picked up the ball
 */
 
-void MotorControl::move_back(float val)
+bool MotorControl::move_back(float duration)
 {
-    left_back(Config::VELOCITY - val * Config::VELOCITY / 2);
-    right_back(Config::VELOCITY + val * Config::VELOCITY / 2);
+    Timer timer;
+    timer.update();
+    Mat src;
+    while (duration >= 0) {
+        if(digitalRead (Config::BTN3) == LOW)
+        {
+            return 0;
+        }
+
+        capture->read(src);
+        resize(src, src, frame);
+        imshow("Origin", src);
+        waitKey(1);
+
+        timer.update();
+        duration -= timer.getDeltaTime();
+
+        left_back(Config::MAX_VELOCITY);
+        right_back(Config::MAX_VELOCITY);
+    }
+    stop();
+    return 1;
+}
+
+void MotorControl::setCamera(VideoCapture *capture, Size frame)
+{
+    this->capture = capture;
+    this->frame = frame;
 }
 
 int MotorControl::pidCalculate(float error, float kP, float kI, float kD)

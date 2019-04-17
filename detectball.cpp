@@ -65,12 +65,16 @@ void DetectBall::findContour(const Mat &image)
     for( int i = 0; i < contours.size(); i++ )
     {
         approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
-        minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
+        Rect bBox = boundingRect(contours_poly[i]);
+        center[i].x = bBox.x + bBox.width / 2;
+        center[i].y = bBox.y + bBox.height / 2;
+        if (bBox.width < bBox.height) radius[i] = bBox.width / 2;
+        else radius[i] = bBox.height / 2;
     }
 
     for( int i = 0; i < contours.size(); i++ )
     {
-        if (radius[i] < image.rows/4)
+        if (radius[i] < image.rows/4 && radius[i] > image.rows/64)
         {
             if (contourArea(Mat(contours[i])) > radius[i] * radius[i] * M_PI * 0.6)
             {

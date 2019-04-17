@@ -24,12 +24,19 @@ int BallPicker::start()
         if(digitalRead (Config::BTN2) == LOW)
 		{
             started = true;
-            if (!motor.move(angle, duration)) {
+            if (!motor.move(0, duration)) {
                 motor.stop();
                 exit(0);
             }
+            motor.stop();
+            delay(500);
+            if (!motor.rotateTo(angle * 100 / 180)) {
+                motor.stop();
+                exit(0);
+            }
+            motor.stop();
             motor.reset();
-            frameSkip = 10;
+            frameSkip = 20;
 		}
 
         if(digitalRead (Config::BTN3) == LOW)
@@ -40,7 +47,7 @@ int BallPicker::start()
 
         if(digitalRead (Config::BTN1) == LOW)
         {
-            arm.pickUp(0, 20, 20);
+            arm.pickUp(0, 25, 15);
         }
 
         timer.update();
@@ -88,6 +95,11 @@ bool BallPicker::isStart()
     return run;
 }
 
+void BallPicker::setZone(int zone)
+{
+    this->zone = zone;
+}
+
 void BallPicker::setAngle(int angle)
 {
     this->angle = angle;
@@ -111,7 +123,7 @@ void BallPicker::setOffset(float x, float y)
 
 void BallPicker::init()
 {
-	namedWindow( "Origin", CV_WINDOW_AUTOSIZE );
+    namedWindow( "Origin", WINDOW_NORMAL );
 
     if (Config::DISPLAY_COLOR_THRESHOLD)
     {
@@ -140,6 +152,8 @@ void BallPicker::init()
 	pullUpDnControl (Config::BTN4, PUD_UP) ;
 
     pinMode (Config::BL, OUTPUT);
+
+    motor.setCamera(&capture, frame);
 	
 	motor.init();
 	
@@ -154,6 +168,11 @@ void BallPicker::process(const vector<Vec3f> &ballList)
     {
         for( size_t i = 0; i < ballList.size(); i++ )
         {
+            int yPos = HEIGHT / 2 - ballList[i][1];
+            float distance = calcDistance(ballList[i][2], yPos);
+            float height = calcHeight(distance, yPos);
+            if (height < 5) continue;
+
             if (ballList[i][2] > radius){
                 x = ballList[i][0];
                 y = ballList[i][1];
@@ -168,6 +187,11 @@ void BallPicker::process(const vector<Vec3f> &ballList)
         for( size_t i = 0; i < ballList.size(); i++ )
         {
             float error = (float) (ballList[i][0] - WIDTH / 2) / (WIDTH / 2);
+            int yPos = HEIGHT / 2 - ballList[i][1];
+            float distance = calcDistance(ballList[i][2], yPos);
+            float height = calcHeight(distance, yPos);
+            if (height < 5) continue;
+
             if (abs(preError - error) < abs(preError - nearest_error)){
                 x = ballList[i][0];
                 y = ballList[i][1];
@@ -182,37 +206,56 @@ void BallPicker::process(const vector<Vec3f> &ballList)
         else preError = nearest_error;
     }
 
-    if (ballList.size() > 0) {
+    if (ballList.size() > 0 && radius != 0) {
         line(src, Point(WIDTH / 2, HEIGHT / 2), Point(cvRound(x), cvRound(y)), Scalar(0,255,0), 2, 4, 0);
-        float dstDistance = 25.0f;
+        float dstDistance = 28.0f;
         int yPos = HEIGHT / 2 - y;
         float distance = calcDistance(radius, yPos);
         float height = calcHeight(distance, yPos);
         float error = (float) (x - WIDTH / 2) / (WIDTH / 2);
 
-        if (distance < 5) return;
-
         cout << error << " " << distance << "  " << height << endl;
 
         if (distance > dstDistance && Config::MOTOR) {
             float x = dstDistance / distance;
-            x = 1 - pow(x, 3);
+            x = 1 - pow(x, 2);
             motor.move_forward(error / x, x);
         }
         else {
             motor.stop();
+            if (!isPickUp) {
+                delay(500);
+                frameSkip = 5;
+                isPickUp = true;
+                return;
+            }
             if (Config::ARM){
                 delay(100);
                 arm.pickUp(error, distance + offsetX, height + offsetY);
                 delay(100);
-                motor.move_back(0);
-                delay(2500);
-                motor.stop();
-                delay(100);
-                if (!motor.rotateTo(-700)) {
+                arm.release();
+             if (!motor.move_back(2)) {
                     motor.stop();
                     exit(0);
                 }
+                delay(100);
+                motor.reset();
+
+                if (zone == 0)
+                {
+                    if (!motor.rotateTo(-180)) {
+                        motor.stop();
+                        exit(0);
+                    }
+                }
+                else
+                {
+                    if (!motor.rotateTo(180)) {
+                        motor.stop();
+                        exit(0);
+                    }
+                }
+
                 delay(500);
                 arm.drop();
                 delay(100);
@@ -221,6 +264,7 @@ void BallPicker::process(const vector<Vec3f> &ballList)
                     exit(0);
                 }
                 frameSkip = 10;
+                isPickUp = false;
             }
         }
     } else {
@@ -250,7 +294,8 @@ float BallPicker::calcDistance(float radius, int yPos)
 float BallPicker::calcHeight(float distance, int yPos)
 {
     float angle = atan((float) yPos / (HEIGHT / 2) * tan(24.4 * DEG_TO_RAD)) + 8 * DEG_TO_RAD;
-    return distance * tan(angle) + 10;
+    float height = distance * tan(angle) + 10 + 4 * tan(angle);
+    return height;
 }
 
 void BallPicker::drawBall(const vector<Vec3f> &balls)

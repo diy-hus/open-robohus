@@ -221,7 +221,7 @@ void MPU9250::calibrateMPU9250()
         origGyro[0] += gyroCount[0] * gRes;
         origGyro[1] += gyroCount[1] * gRes;
         origGyro[2] += gyroCount[2] * gRes;
-        delay(25);
+        delay(5);
     }
 
     origGyro[0] /= 100.0f;
@@ -235,7 +235,7 @@ void MPU9250::updateGyro()
     getGres();
     updateTime();
 
-    angleGyro += (gyroCount[2] * gRes - origGyro[2]) * 0.0595 / 3.28;
+    angleGyro += (gyroCount[2] * gRes - origGyro[2]) * deltat;
 }
 
 uint8_t MPU9250::readByte(uint8_t address, uint8_t subAddress)

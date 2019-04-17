@@ -2,6 +2,8 @@
 #define MOTORCONTROL_H
 
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/opencv.hpp>
 #include <iostream>
 #include <softPwm.h>
 #include <wiringPi.h>
@@ -27,11 +29,14 @@ public:
     void move_forward(float, float, int velocity = Config::VELOCITY);
     bool move(float, float);
     bool rotateTo(float angle);
-    void move_back(float);
+    bool move_back(float);
+    void setCamera(VideoCapture *capture, Size frame);
     
 protected:
 
     MPU9250 sensor;
+    VideoCapture *capture;
+    Size frame;
 
     int bP;
     int bI;
